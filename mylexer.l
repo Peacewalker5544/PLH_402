@@ -1,12 +1,134 @@
 %{
 #include <stdio.h>
 %}
+
+IDENTIFIER [a-zA-Z][0-9a-zA-Z_]*
+
 NUMBER [+|-]?([0-9]+\.?|[0-9]*\.[0-9]+)
-ID [a-zA-Z_][0-9a-zA-Z_]*
+
+KEYWORD_INTEGER (integer)
+KEYWORD_SCALAR (scalar)
+KEYWORD_STR (str)
+KEYWORD_BOOL (boolean)
+KEYWORD_TRUE (True)
+
+KEYWORD_FALSE (False)
+KEYWORD_CONST (const)
+KEYWORD_IF (if)
+KEYWORD_ELSE (else)
+KEYWORD_ENDIF (endif)
+
+KEYWORD_FOR (for)
+KEYWORD_IN (in)
+KEYWORD_ENDFOR (endfor)
+KEYWORD_WHILE (while)
+KEYWORD_ENDWHILE (endwhile)
+
+KEYWORD_BREAK (break)
+KEYWORD_CONTINUE (continue)
+KEYWORD_NOT (not)
+KEYWORD_AND (and)
+KEYWORD_OR (or)
+
+KEYWORD_DEF (def)
+KEYWORD_ENDDEF (enddef)
+KEYWORD_MAIN (main)
+KEYWORD_RETURN (return)
+KEYWORD_COMP (comp)
+
+KEYWORD_ENDCOMP (endcomp)
+KEYWORD_OF (of)
+
+OP_PLUS (\+)
+OP_MINUS (\-)
+OP_PROD (\*)
+OP_DIV (\/)
+OP_MOD (\%)
+OP_POWER (\*)(\*)
+
+OP_EQUALS (\=)(\=)
+OP_NOT_EQUALS (\!)(\=)	
+OP_SMALLER (\<)
+OP_SMALLER_EQ (\<)(\=)
+OP_BIGGER (\>)
+OP_BIGGER_EQ (\>)(\=)
+
+/*WARNING: Not yet implemented*/
+OP_AND (and)
+OP_OR (or)
+OP_NOT (not)
+
+/*WARNING: Not yeat implemented*/
+OP_POS +/(NUMBER)
+OP_NEG -/(NUMBER)
+
+OP_ASSIGN (\=)
+OP_ASSIGN_PLUS (\+)(\=)
+OP_ASSIGN_MINUS (\-)(\=)
+OP_ASSIGN_PROD (\*)(\=)
+OP_ASSIGN_DIV (\/)(\=)
+OP_ASSIGN_MOD (\%)(\=)
+
+
 %%
-{NUMBER} { printf("Found the number %s\n", yytext); }
-{ID} { printf("Found the identifier %s\n", yytext); }
-. { printf("Error\n"); }
+
+{KEYWORD_INTEGER} { printf("token\t\tKEYWORD_INTEGER\t\t%s\n", yytext); }
+{KEYWORD_SCALAR} { printf("token\t\tKEYWORD_SCALAR\t\t%s\n", yytext); }
+{KEYWORD_STR} { printf("token\t\tKEYWORD_STR\t\t%s\n", yytext); }
+{KEYWORD_BOOL} { printf("token\t\tKEYWORD_BOOL\t\t%s\n", yytext); }
+{KEYWORD_TRUE} { printf("token\t\tKEYWORD_TRUE\t\t%s\n", yytext); }
+{KEYWORD_FALSE} { printf("token\t\tKEYWORD_FALSE\t\t%s\n", yytext); }
+{KEYWORD_CONST} { printf("token\t\tKEYWORD_CONST\t\t%s\n", yytext); }
+{KEYWORD_IF} { printf("token\t\tKEYWORD_IF\t\t%s\n", yytext); }
+{KEYWORD_ELSE} { printf("token\t\tKEYWORD_ELSE\t\t%s\n", yytext); }
+{KEYWORD_ENDIF} { printf("token\t\tKEYWORD_ENDIF\t\t%s\n", yytext); }
+{KEYWORD_FOR} { printf("token\t\tKEYWORD_FOR\t\t%s\n", yytext); }
+{KEYWORD_IN} { printf("token\t\tKEYWORD_IN\t\t%s\n", yytext); }
+{KEYWORD_ENDFOR} { printf("token\t\tKEYWORD_ENDFOR\t\t%s\n", yytext); }
+{KEYWORD_WHILE} { printf("token\t\tKEYWORD_WHILE\t\t%s\n", yytext); }
+{KEYWORD_ENDWHILE} { printf("token\t\tKEYWORD_ENDWHILE\t%s\n", yytext); }
+{KEYWORD_BREAK} { printf("token\t\tKEYWORD_BREAK\t\t%s\n", yytext); }
+{KEYWORD_CONTINUE} { printf("token\t\tKEYWORD_CONTINUE\t%s\n", yytext); }
+{KEYWORD_NOT} { printf("token\t\tKEYWORD_NOT\t\t%s\n", yytext); } 
+{KEYWORD_AND} { printf("token\t\tKEYWORD_AND\t\t%s\n", yytext); }
+{KEYWORD_OR} { printf("token\t\tKEYWORD_OR\t\t%s\n", yytext); } 
+{KEYWORD_DEF} { printf("token\t\tKEYWORD_DEF\t\t%s\n", yytext); }
+{KEYWORD_ENDDEF} { printf("token\t\tKEYWORD_ENDDEF\t\t%s\n", yytext); }
+{KEYWORD_MAIN} { printf("token\t\tKEYWORD_MAIN\t\t%s\n", yytext); }
+{KEYWORD_RETURN} { printf("token\t\tKEYWORD_RETURN\t\t%s\n", yytext); }
+{KEYWORD_COMP} { printf("token\t\tKEYWORD_COMP\t\t%s\n", yytext); }
+{KEYWORD_ENDCOMP} { printf("token\t\tKEYWORD_ENDCOMP\t\t%s\n", yytext); }
+{KEYWORD_OF} { printf("token\t\tKEYWORD_OF\t\t%s\n", yytext); }
+
+
+{OP_PLUS} { printf("token\t\tOP_PLUS\t\t\t%s\n", yytext); }
+{OP_MINUS} { printf("token\t\tOP_MINUS\t\t%s\n", yytext); }
+{OP_PROD} { printf("token\t\tOP_PROD\t\t\t%s\n", yytext); }
+{OP_DIV} { printf("token\t\tOP_DIV\t\t\t%s\n", yytext); }
+{OP_MOD} { printf("token\t\tOP_MOD\t\t\t%s\n", yytext); }
+{OP_POWER} { printf("token\t\tOP_POWER\t\t%s\n", yytext); }
+
+{OP_EQUALS} { printf("token\t\tOP_EQUALS\t\t%s\n", yytext); }
+{OP_NOT_EQUALS} { printf("token\t\tOP_NOT_EQUALS\t\t%s\n", yytext); }
+{OP_SMALLER} { printf("token\t\tOP_SMALLER\t\t%s\n", yytext); }
+{OP_SMALLER_EQ} { printf("token\t\tOP_SMALLER_EQ\t\t%s\n", yytext); }
+{OP_BIGGER} { printf("token\t\tOP_BIGGER\t\t%s\n", yytext); }
+{OP_BIGGER_EQ} { printf("token\t\tOP_BIGGER_EQ\t\t%s\n", yytext); }
+
+{OP_ASSIGN} { printf("token\t\tOP_ASSIGN\t\t%s\n", yytext); }
+{OP_ASSIGN_PLUS} { printf("token\t\tOP_ASSIGN_PLUS\t\t%s\n", yytext); }
+{OP_ASSIGN_MINUS} { printf("token\t\tOP_ASSIGN_MINUS\t\t%s\n", yytext); }
+{OP_ASSIGN_PROD} { printf("token\t\tOP_ASSIGN_PROD\t\t%s\n", yytext); }
+{OP_ASSIGN_DIV} { printf("token\t\tOP_ASSIGN_DIV\t\t%s\n", yytext); }
+{OP_ASSIGN_MOD} { printf("token\t\tOP_ASSIGN_MOD\t\t%s\n", yytext); }
+
+
+{IDENTIFIER} { printf("token\t\tIDENTIFIER\t\t%s\n", yytext); }
+{NUMBER} { printf("Found the\t\tnumber\t\t%s\n", yytext); }
+
+[ \r\t] /*WARNING:skip spaces*/
+\n /*WARNING:skip new line*/
+
 %%
 int main() {
 yylex();
