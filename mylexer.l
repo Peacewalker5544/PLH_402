@@ -4,8 +4,6 @@
 
 IDENTIFIER [a-zA-Z][0-9a-zA-Z_]*
 
-NUMBER [+|-]?([0-9]+\.?|[0-9]*\.[0-9]+)
-
 KEYWORD_INTEGER (integer)
 KEYWORD_SCALAR (scalar)
 KEYWORD_STR (str)
@@ -38,6 +36,9 @@ KEYWORD_COMP (comp)
 
 KEYWORD_ENDCOMP (endcomp)
 KEYWORD_OF (of)
+
+CONST_INTEGER (0|[1-9][0-9]*)
+CONST_FLOAT {CONST_INTEGER}((\.){CONST_INTEGER})(([eE]([\+\-]?){CONST_INTEGER})?)
 
 OP_PLUS (\+)
 OP_MINUS (\-)
@@ -122,9 +123,10 @@ OP_ASSIGN_MOD (\%)(\=)
 {OP_ASSIGN_DIV} { printf("token\t\tOP_ASSIGN_DIV\t\t%s\n", yytext); }
 {OP_ASSIGN_MOD} { printf("token\t\tOP_ASSIGN_MOD\t\t%s\n", yytext); }
 
+{CONST_INTEGER} { printf("token\t\tCONST_INTEGER\t\t%s\n", yytext); }
+{CONST_FLOAT} { printf("token\t\tCONST_FLOAT\t\t%s\n", yytext); }
 
 {IDENTIFIER} { printf("token\t\tIDENTIFIER\t\t%s\n", yytext); }
-{NUMBER} { printf("Found the\t\tnumber\t\t%s\n", yytext); }
 
 [ \r\t] /*WARNING:skip spaces*/
 \n /*WARNING:skip new line*/
