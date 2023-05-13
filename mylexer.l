@@ -144,11 +144,11 @@ LINE_COMMENT (\-)(\-)
 
 {IDENTIFIER} { printf("token\t\tIDENTIFIER\t\t%s\n", yytext); }
 
-[ \r\t\n] /*skip spaces*/
-
 {LINE_COMMENT} {BEGIN(line_comment);}
 <line_comment>[^\n]*    /*Exculde everything except \n*/
 <line_comment>\n {BEGIN(INITIAL);}
+
+[ \r\t\n] /*skip spaces*/
 
 %%
 int main() {
