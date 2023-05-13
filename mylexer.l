@@ -39,6 +39,10 @@ KEYWORD_OF (of)
 
 CONST_INTEGER (0|[1-9][0-9]*)
 CONST_FLOAT {CONST_INTEGER}((\.){CONST_INTEGER})(([eE]([\+\-]?){CONST_INTEGER})?)
+ESC_CHAR (\\)[ntr\\\"]
+
+/*not sure yet for , and . chars*/
+CONST_STRING (\")([\ a-zA-Z0-9\-\+\*\/\:\_\$\%\!\#\@\&\~\^\(\)\,\.]|{ESC_CHAR})*(\") 
 
 OP_PLUS (\+)
 OP_MINUS (\-)
@@ -47,21 +51,13 @@ OP_DIV (\/)
 OP_MOD (\%)
 OP_POWER (\*)(\*)
 
+
 OP_EQUALS (\=)(\=)
 OP_NOT_EQUALS (\!)(\=)	
 OP_SMALLER (\<)
 OP_SMALLER_EQ (\<)(\=)
 OP_BIGGER (\>)
 OP_BIGGER_EQ (\>)(\=)
-
-/*WARNING: Not yet implemented*/
-OP_AND (and)
-OP_OR (or)
-OP_NOT (not)
-
-/*WARNING: Not yeat implemented*/
-OP_POS +/(NUMBER)
-OP_NEG -/(NUMBER)
 
 OP_ASSIGN (\=)
 OP_ASSIGN_PLUS (\+)(\=)
@@ -70,6 +66,17 @@ OP_ASSIGN_PROD (\*)(\=)
 OP_ASSIGN_DIV (\/)(\=)
 OP_ASSIGN_MOD (\%)(\=)
 
+DELIM_SEMICOLON (\;)
+DELIM_LPAR (\()
+DELIM_RPAR (\))
+DELIM_COMMA (\,)
+DELIM_LBRAC (\[)
+DELIM_RBRAC (\])
+DELIM_COLON (\:)
+DELIM_DOT (\.)
+
+%x line_comment
+LINE_COMMENT (\-)(\-)
 
 %%
 
@@ -101,7 +108,6 @@ OP_ASSIGN_MOD (\%)(\=)
 {KEYWORD_ENDCOMP} { printf("token\t\tKEYWORD_ENDCOMP\t\t%s\n", yytext); }
 {KEYWORD_OF} { printf("token\t\tKEYWORD_OF\t\t%s\n", yytext); }
 
-
 {OP_PLUS} { printf("token\t\tOP_PLUS\t\t\t%s\n", yytext); }
 {OP_MINUS} { printf("token\t\tOP_MINUS\t\t%s\n", yytext); }
 {OP_PROD} { printf("token\t\tOP_PROD\t\t\t%s\n", yytext); }
@@ -123,13 +129,26 @@ OP_ASSIGN_MOD (\%)(\=)
 {OP_ASSIGN_DIV} { printf("token\t\tOP_ASSIGN_DIV\t\t%s\n", yytext); }
 {OP_ASSIGN_MOD} { printf("token\t\tOP_ASSIGN_MOD\t\t%s\n", yytext); }
 
+{DELIM_SEMICOLON} { printf("token\t\tDELIM_SEMICOLON\t\t%s\n", yytext); }
+{DELIM_LPAR} { printf("token\t\tDELIM_LPAR\t\t%s\n", yytext); }
+{DELIM_RPAR} { printf("token\t\tDELIM_RPAR\t\t%s\n", yytext); }
+{DELIM_COMMA} { printf("token\t\tDELIM_COMMA\t\t%s\n", yytext); }
+{DELIM_LBRAC} { printf("token\t\tDELIM_LBRAC\t\t%s\n", yytext); }
+{DELIM_RBRAC} { printf("token\t\tDELIM_RBRAC\t\t%s\n", yytext); }
+{DELIM_COLON} { printf("token\t\tDELIM_COLON\t\t%s\n", yytext); }
+{DELIM_DOT} { printf("token\t\tDELIM_DOT\t\t%s\n", yytext); }
+
 {CONST_INTEGER} { printf("token\t\tCONST_INTEGER\t\t%s\n", yytext); }
 {CONST_FLOAT} { printf("token\t\tCONST_FLOAT\t\t%s\n", yytext); }
+{CONST_STRING} { printf("token\t\tCONST_STRING\t\t%s\n", yytext); }
 
 {IDENTIFIER} { printf("token\t\tIDENTIFIER\t\t%s\n", yytext); }
 
-[ \r\t] /*WARNING:skip spaces*/
-\n /*WARNING:skip new line*/
+[ \r\t\n] /*skip spaces*/
+
+{LINE_COMMENT} {BEGIN(line_comment);}
+<line_comment>[^\n]*    /*Exculde everything except \n*/
+<line_comment>\n {BEGIN(INITIAL);}
 
 %%
 int main() {
