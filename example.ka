@@ -1,90 +1,32 @@
-integer
-scalar
-str
-boolean
-True
-False
-const
-if
-else
-endif
-for
-in
-endfor
-while
-endwhile
-break
-continue
-not
-and
-or
-def
-enddef
-main
-return
-comp
-endcomp
-of
-true
-TRUE
-scAlaR12
+const pi = 3.14152: scalar;
+const test2 = False: boolean;
+const test3 = True: boolean;
+i,j: scalar;
+s1,s2: str;
+n1:integer;
+x,y:scalar;
+s,ss:str;
+test:boolean;
+grades[5]:scalar;
+directions[4]:str;
+test4[]:str;
 
-+
--
-*
-/
-%
-****
-===
-!=!=
-<
-<=<
->
->==
-and
-not
-OR
-or
-=
-+=
--=+
-*=++
-/==
-%=%
+def test(promt: str, msg:str):
+	n1:integer;
+	x,y:scalar;
+	const pi = 3.14152: scalar;
+	n1:integer;
+	x,y:scalar;
+	directions[4]:str;
+	const test3 = True: boolean;
+enddef;
 
-231
-323
-12323
-23211
-321324
-211 1 2331 2231 2
-200
-0002
-0123
-
-42.4
-4.2e1
-0.420E+2
-42000.0e-3
-
-+-+--
-
-4.22.2[](+);:.[]
-
-"M"
-"\n"
-"Hello world!\n"
-"\""
-"abc" "Route 66"
-"Item:\t\"Laser Printer\"\nPrice:\t$142\n"
-"testaki -, +, *, /, :, _, $, %, !, #, @, &, ~, ^, (, )."
---testaki hahahaahaha \n \n broke it yohoho
-
-aa
-yayaho
-
--- My first Kappa program. File: myprog.ka
-const message = "Hello world!\n" :str;
 def main():
-	writeStr(message);
+	n1:integer;
+	x,y:scalar;
+	const pi = 3.14152: scalar;
+	n1:integer;
+	x,y:scalar;
+	directions[4]:str;
+	const test3 = True: boolean;
 enddef;
