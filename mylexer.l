@@ -7,6 +7,7 @@
  #include <math.h>
 
  int line_num = 1;
+ 
 %}
 
 IDENTIFIER [a-zA-Z][0-9a-zA-Z_]*
@@ -71,6 +72,7 @@ OP_ASSIGN_MINUS (\-)(\=)
 OP_ASSIGN_PROD (\*)(\=)
 OP_ASSIGN_DIV (\/)(\=)
 OP_ASSIGN_MOD (\%)(\=)
+OP_ASSIGN_ARR (\:)(\=)
 
 DELIM_SEMICOLON (\;)
 DELIM_LPAR (\()
@@ -136,6 +138,7 @@ OP_HASHTAG (\#)
 {OP_ASSIGN_PROD} {return OP_ASSIGN_PROD;}
 {OP_ASSIGN_DIV} {return OP_ASSIGN_DIV;}
 {OP_ASSIGN_MOD} {return OP_ASSIGN_MOD;}
+{OP_ASSIGN_ARR} {return OP_ASSIGN_ARR;}
 
 {DELIM_SEMICOLON} {return DELIM_SEMICOLON;}
 {DELIM_LPAR} {return DELIM_LPAR;}

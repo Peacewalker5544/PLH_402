@@ -1,3 +1,12 @@
+
+comp Circle:
+	#test[5]:integer;
+	#x:integer;
+	#x,#y,#z:str;
+	def move (dx: scalar, dy: scalar): enddef;
+	def move2 (dx: scalar, dy: scalar): enddef;
+endcomp;
+
 const pi = 3.14152: scalar;
 const test2 = False: boolean;
 const test3 = True: boolean;
@@ -14,11 +23,37 @@ test4[]:str;
 def test(promt: str, msg:str):
 	n1:integer;
 	x,y:scalar;
-	const pi = 3.14152: scalar;
+	if (n1 == 1):
+		x = x + 1;
+		x = x - 7;
+	else:
+		x = x + y;
+		x = x + 3;
+	endif;
+
+	if (n1 == 1):
+		x = x + 1;
+	endif;
+	new_array := [x+5 for elm: 5] : Circle;
+	for x in [1:5:1]: x = x + 3; endfor;
+	half := [x/2 for x:integer in a of 100] : scalar;
+enddef;
+
+def test2(promt: str, msg:str)->Circle:
 	n1:integer;
 	x,y:scalar;
-	directions[4]:str;
-	const test3 = True: boolean;
+	while ( x + 2 < 5 ):
+		x = x + 1;
+		y = x - 1;
+	endwhile;
+	break;
+	continue;
+	;;
+	readStr();
+	readInteger();
+	return;
+	return x + 4;
+	return 1;
 enddef;
 
 def main():
@@ -29,4 +64,8 @@ def main():
 	x,y:scalar;
 	directions[4]:str;
 	const test3 = True: boolean;
+	Circle:integer;
+	n1:Circle;
 enddef;
+
+

@@ -10,3 +10,4 @@ clean:
 	rm -f myanalyzer.tab.c
 	rm -f myanalyzer.tab.h
 	rm -f myanalyzer.output
+	rm -f a.out

@@ -6,7 +6,11 @@
  extern char* yytext;
 
  extern int line_num;
+
+ char* saved_string;
+
 %}
+
 
 %union {
 	char* str;
@@ -33,9 +37,6 @@
 
 %token KEYWORD_BREAK
 %token KEYWORD_CONTINUE
-%token KEYWORD_NOT
-%token KEYWORD_AND
-%token KEYWORD_OR
 
 %token KEYWORD_DEF
 %token KEYWORD_ENDDEF	
@@ -46,35 +47,9 @@
 %token KEYWORD_ENDCOMP
 %token KEYWORD_OF
 
-%token OP_PLUS
-%token OP_MINUS
-%token OP_PROD
-%token OP_DIV
-%token OP_MOD
-%token OP_POWER
-
-%token OP_EQUALS
-%token OP_NOT_EQUALS
-%token OP_SMALLER
-%token OP_SMALLER_EQ
-%token OP_BIGGER
-%token OP_BIGGER_EQ
-
-%token OP_ASSIGN
-%token OP_ASSIGN_PLUS
-%token OP_ASSIGN_MINUS
-%token OP_ASSIGN_PROD
-%token OP_ASSIGN_DIV
-%token OP_ASSIGN_MOD
-
 %token DELIM_SEMICOLON
-%token DELIM_LPAR
-%token DELIM_RPAR
 %token DELIM_COMMA
-%token DELIM_LBRAC
-%token DELIM_RBRAC
 %token DELIM_COLON
-%token DELIM_DOT
 %token OP_HASHTAG
 
 %token <str> CONST_INTEGER 
@@ -99,13 +74,32 @@
 %type <str> var_identifiers
 %type <str> func_body
 %type <str> func_arg
-%type <str> expression
 %type <str> instruction
-%type <str> comp_members
+%type <str> comp_members_var
+%type <str> comp_members_method
 %type <str> member_var
 %type <str> member_method
+%type <str> member_var_identifiers
+%type <str> method_body
+%type <str> expr
+%type <str> func_call
+%type <str> n_expr
+%type <str> expression
+%type <str> statements
 
 %start input
+
+%left DELIM_DOT DELIM_LPAR DELIM_RPAR DELIM_LBRAC DELIM_RBRAC
+%right OP_POWER
+%right OP_SIGN
+%left OP_PROD OP_DIV OP_MOD
+%left OP_PLUS OP_MINUS
+%left OP_SMALLER OP_SMALLER_EQ OP_BIGGER OP_BIGGER_EQ
+%left OP_EQUALS OP_NOT_EQUALS
+%right KEYWORD_NOT
+%left KEYWORD_AND
+%left KEYWORD_OR
+%right OP_ASSIGN OP_ASSIGN_PLUS OP_ASSIGN_MINUS OP_ASSIGN_PROD OP_ASSIGN_DIV OP_ASSIGN_MOD OP_ASSIGN_ARR
 
 %%
 
@@ -139,10 +133,9 @@ program_func:
 	;
 */
 
-/*WARNING DEN EINAI ME THN SEIRA POU ZHTAEI*/
 program:
 	%empty {$$ = template("");}
-	|program declare_comp DELIM_SEMICOLON{$$ = template("%s\n%s;", $1, $2);}
+	|program declare_comp DELIM_SEMICOLON{$$ = template("%s\n%s", $1, $2);}
 	|program declare_const DELIM_SEMICOLON {$$ = template("%s\n%s;", $1, $2);}
 	|program declare_var DELIM_SEMICOLON {$$ = template("%s\n%s;", $1, $2);}
 	|program declare_func DELIM_SEMICOLON{$$ = template("%s\n\n%s", $1, $2);}
@@ -154,32 +147,44 @@ program_main:
 	;
  
 declare_comp:
-	KEYWORD_COMP IDENTIFIER DELIM_COLON comp_members KEYWORD_ENDCOMP {$$ = template("typedef struct %s {\n%s} %s", $2, $4, $2);}
+	KEYWORD_COMP IDENTIFIER DELIM_COLON comp_members_var { saved_string = $2; } comp_members_method KEYWORD_ENDCOMP 
+	{$$ = template("typedef struct %s {\n%s}%s;\n\n%s", $2, $4, $2, $6);}
 	;
 
 /*ERWTHSH ginetai na exw types xwris member variables*/
-comp_members:	
-	//%empty {$$ = template("");}
-	member_var {$$ = template("%s;\n", $1);}
- 	|member_method {$$ = template("%s;\n", $1);}
-	|comp_members member_var {$$ = template("%s%s;", $1, $2);}
-	|comp_members member_method {$$ = template("%s%s;", $1, $2);}
+comp_members_var:	
+	%empty {$$ = template("");}
+	|member_var {$$ = template("%s;\n", $1);}
+	|comp_members_var member_var {$$ = template("%s%s;\n", $1, $2);}
 	;
 
-/*LEIPEI TO COMP PWS TO BAZW EKEI MESA DHLADH PWS MPORW NA DW TA YPARXONTA COMPS*/
+comp_members_method:
+	%empty {$$ = template("");}
+	|member_method {$$ = template("%s;\n", $1);}
+	|comp_members_method member_method {$$ = template("%s\n%s;\n", $1, $2);}
+	;
+
+/*AWNSERED) LEIPEI TO COMP PWS TO BAZW EKEI MESA DHLADH PWS MPORW NA DW TA YPARXONTA COMPS*/ 
 member_var:
-	member_var_identifiers DELIM_COLON data_type {$$ = template("%s %s", $3, $1);}
-	|OP_HASHTAG IDENTIFIER DELIM_LBRAC DELIM_RBRAC DELIM_COLON data_type {$$ = template("%s* %s", $5, $1);}	
-	|OP_HASHTAG IDENTIFIER DELIM_LBRAC CONST_INTEGER DELIM_RBRAC DELIM_COLON data_type {$$ = template("%s %s[%s]", $6, $1, $3);}
+	member_var_identifiers DELIM_COLON data_type DELIM_SEMICOLON {$$ = template("%s %s", $3, $1);}
+	|OP_HASHTAG IDENTIFIER DELIM_LBRAC DELIM_RBRAC DELIM_COLON data_type DELIM_SEMICOLON {$$ = template("%s* %s", $6, $2);}	
+	|OP_HASHTAG IDENTIFIER DELIM_LBRAC CONST_INTEGER DELIM_RBRAC DELIM_COLON data_type DELIM_SEMICOLON {$$ = template("%s %s[%s]", $7, $2, $4);}
 	;
 
 member_var_identifiers:
-	OP_HASHTAG IDENTIFIER {$$ = $1;}
+	OP_HASHTAG IDENTIFIER {$$ = $2;}
 	|member_var_identifiers DELIM_COMMA OP_HASHTAG IDENTIFIER {$$ = template("%s, %s", $1, $4);}
 	;
 
 /*ERWTHSH PWS TO FTIAXNW NA EXEI PROSBASH MONO STA MEMBER VARIABLES*/
 member_method:
+	KEYWORD_DEF IDENTIFIER DELIM_LPAR func_arg DELIM_RPAR OP_MINUS OP_BIGGER data_type DELIM_COLON method_body KEYWORD_RETURN expression KEYWORD_ENDDEF DELIM_SEMICOLON
+	{$$ = template("%s %s(%s){%s\nreturn %s\n}", $8, $2, $4, $10, $12);}
+	|KEYWORD_DEF IDENTIFIER DELIM_LPAR func_arg DELIM_RPAR DELIM_COLON method_body KEYWORD_ENDDEF DELIM_SEMICOLON
+	{$$ = template("void %s(struct %s *self, %s){%s\n}", $2, saved_string, $4, $7);}
+	;
+
+method_body:
 	%empty {$$ = template("");}
 	;
 
@@ -196,7 +201,7 @@ declare_var:
 
 declare_func:
 	KEYWORD_DEF IDENTIFIER DELIM_LPAR func_arg DELIM_RPAR OP_MINUS OP_BIGGER data_type DELIM_COLON func_body KEYWORD_RETURN expression KEYWORD_ENDDEF
-	{$$ = template("%s %s(%s){%s\nreturn %s}", $8, $2, $4, $10, $12);}
+	{$$ = template("%s %s(%s){%s\nreturn %s\n}", $8, $2, $4, $10, $12);}
 	|KEYWORD_DEF IDENTIFIER DELIM_LPAR func_arg DELIM_RPAR DELIM_COLON func_body KEYWORD_ENDDEF
 	{$$ = template("void %s(%s){%s\n}", $2, $4, $7);}
 	;
@@ -212,16 +217,88 @@ func_body:
 	%empty {$$ = template("");}
 	|func_body declare_const DELIM_SEMICOLON {$$ = template("%s\n%s;", $1, $2);}
 	|func_body declare_var DELIM_SEMICOLON {$$ = template("%s\n%s;", $1, $2);}
-  |func_body instruction DELIM_SEMICOLON{$$ = template("%s\n%s", $1, $2);}
+  |func_body instruction  {$$ = template("%s\n%s", $1, $2);}
 	;
 
 expression:
-	%empty {$$ = template("");}
+	expr DELIM_SEMICOLON {$$ = template("%s;", $1);}
 	;
 
-instruction:
-	%empty {$$ = template("");}
+expr:
+	data_const {$$ = template("%s", $1);}
+	|IDENTIFIER {$$ = $1;}
+	|func_call {$$ = template("%s",$1);}
+	//ERWTHSH AN TO EXPR EINAI SWSTO
+	|expr DELIM_DOT expr {$$ = template("%s.%s",$1,$3);}
+	|DELIM_LPAR expr DELIM_RPAR {$$ = template("(%s)",$2);}
+	//ERWTHSH GIA AFTO KAI TOUS PINAKES
+	|IDENTIFIER DELIM_LBRAC expr DELIM_RBRAC {$$ = template("%s[%s]", $1, $3);}
+	|expr OP_POWER expr {$$ = template("pow(%s, %s)", $1, $3);}
+	|OP_PLUS expr %prec OP_SIGN {$$ = template("+%s",$2);}
+	|OP_MINUS expr %prec OP_SIGN {$$ = template("-%s",$2);}
+	|expr OP_PROD expr {$$ = template("%s * %s", $1, $3);}
+	|expr OP_DIV expr {$$ = template("%s / %s", $1, $3);}
+	|expr OP_MOD expr {$$ = template("%s %% %s", $1, $3);}
+	|expr OP_PLUS expr {$$ = template("%s + %s", $1, $3);}
+	|expr OP_MINUS expr {$$ = template("%s - %s", $1, $3);}
+	//ERWTHSH GIA PX X < Y < Z TO IDIO ISXIEU KAI GIA TA IPOLIPA PX GIA +=
+	|expr OP_SMALLER expr {$$ = template("%s < %s", $1, $3);}
+	|expr OP_SMALLER_EQ expr {$$ = template("%s <= %s", $1, $3);}
+	|expr OP_BIGGER expr {$$ = template("%s > %s", $1, $3);}
+	|expr OP_BIGGER_EQ expr {$$ = template("%s >= %s", $1, $3);}
+	|expr OP_EQUALS expr {$$ = template("%s == %s", $1, $3);}
+	|expr OP_NOT_EQUALS expr {$$ = template("%s != %s", $1, $3);}
+	|KEYWORD_NOT expr {$$ = template("!%s", $2);}
+	|expr KEYWORD_AND expr {$$ = template("%s && %s", $1, $3);}
+	|expr KEYWORD_OR expr {$$ = template("%s || %s", $1, $3);}
+	|expr OP_ASSIGN expr {$$ = template("%s = %s", $1, $3);}
+	|expr OP_ASSIGN_PLUS expr {$$ = template("%s += %s", $1, $3);}
+	|expr OP_ASSIGN_MINUS expr {$$ = template("%s -= %s", $1, $3);}
+	|expr OP_ASSIGN_PROD expr {$$ = template("%s *= %s", $1, $3);}
+	|expr OP_ASSIGN_DIV expr {$$ = template("%s /= %s", $1, $3);}
+	|expr OP_ASSIGN_MOD expr {$$ = template("%s %= %s", $1, $3);}
+	//MISSING := NEED TO ADD THIS ASK
 	;
+
+func_call:
+	IDENTIFIER DELIM_LPAR n_expr DELIM_RPAR  {$$ = template("%s(%s)", $1, $3);}
+	;
+
+n_expr:
+	%empty {$$ = template("");}
+	|expr
+	|n_expr DELIM_COMMA expr {$$ = template("%s, %s", $1, $3);}
+	;
+
+statements:
+	%empty {$$ = template("");}
+	|statements instruction {$$ = template("%s%s", $1, $2);}
+
+/*ERWTHSH AN THELEI <= STO FOR*/
+instruction:
+	IDENTIFIER OP_ASSIGN expr DELIM_SEMICOLON {$$ = template("%s = %s;\n", $1, $3);}
+	|KEYWORD_IF DELIM_LPAR expr DELIM_RPAR DELIM_COLON statements KEYWORD_ENDIF DELIM_SEMICOLON {$$ = template("if (%s){\n%s};", $3, $6);}
+	|KEYWORD_IF DELIM_LPAR expr DELIM_RPAR DELIM_COLON statements KEYWORD_ELSE DELIM_COLON statements KEYWORD_ENDIF DELIM_SEMICOLON 
+	{$$ = template("if (%s){\n%s}else{\n%s}", $3, $6, $9);}
+	|KEYWORD_FOR IDENTIFIER KEYWORD_IN DELIM_LBRAC expr DELIM_COLON expr DELIM_COLON expr DELIM_RBRAC
+	DELIM_COLON statements KEYWORD_ENDFOR  DELIM_SEMICOLON
+	{$$ = template("for (int %s = %s ; %s <= %s ; %s += %s){\n%s}", $2, $5, $2, $7, $2, $9, $12);}
+	|KEYWORD_FOR IDENTIFIER KEYWORD_IN DELIM_LBRAC expr DELIM_COLON expr DELIM_RBRAC
+	DELIM_COLON statements KEYWORD_ENDFOR DELIM_SEMICOLON
+	{$$ = template("for (int %s = %s ; %s <= %s ; %s += 1){\n%s;}", $2, $5, $2, $7, $2, $10);}
+	|IDENTIFIER OP_ASSIGN_ARR DELIM_LBRAC expr KEYWORD_FOR expr DELIM_COLON CONST_INTEGER DELIM_RBRAC DELIM_COLON data_type DELIM_SEMICOLON
+	{$$ = template("%s* %s = (%s*)malloc(%s * sizeof(%s)); \nfor (int %s = 0; %s < %s; ++%s){\n%s[%s] = %s;\n}", $11, $1, $11, $8, $11, $6, $6, $8, $6, $1, $6, $4);}
+	|IDENTIFIER OP_ASSIGN_ARR DELIM_LBRAC expr KEYWORD_FOR expr DELIM_COLON data_type KEYWORD_IN IDENTIFIER KEYWORD_OF CONST_INTEGER DELIM_RBRAC DELIM_COLON data_type DELIM_SEMICOLON
+	{$$ = template("%s* %s = (%s*)malloc(%s * sizeof(%s)); \nfor (int array_i = 0; array_i < %s; ++array_i){\n%s[array_i] = %s;\n}", $15, $1, $15, $12, $15, $12, $1, $4);}
+	|KEYWORD_WHILE DELIM_LPAR expr DELIM_RPAR DELIM_COLON statements KEYWORD_ENDWHILE DELIM_SEMICOLON {$$ = template("while (%s){\n%s}", $3, $6);}
+	|KEYWORD_BREAK DELIM_SEMICOLON {$$ = template("break;");}
+	|KEYWORD_CONTINUE DELIM_SEMICOLON {$$ = template("continue;");}
+	|KEYWORD_RETURN DELIM_SEMICOLON {$$ = template("return;");}
+	|KEYWORD_RETURN expr DELIM_SEMICOLON {$$ = template("return %s;", $2);}
+	|func_call {$$ = template("%s;", $1);}
+	|DELIM_SEMICOLON {$$ = template(";");}
+	;
+
 
 /*ERWTHSH: How to ensure that two args don't have the same name ?/*/
 /*LEIPEI TO COMP PWS TO BAZW EKEI MESA DHLADH PWS MPORW NA DW TA YPARXONTA COMPS*/
@@ -238,12 +315,13 @@ var_identifiers:
 	|var_identifiers DELIM_COMMA IDENTIFIER {$$ = template("%s, %s", $1, $3);}
 	;
 
-/*LEIPEI TO COMP PWS TO BAZW EKEI MESA DHLADH PWS MPORW NA DW TA YPARXONTA COMPS*/
+/* TODO: LEIPEI TO COMP PWS TO BAZW EKEI MESA DHLADH PWS MPORW NA DW TA YPARXONTA COMPS MEXRI STIGMIS AUTH EINAI KALH LISI*/
 data_type:
 	KEYWORD_INTEGER {$$ = template("int");}
 	|KEYWORD_SCALAR {$$ = template("double");}
 	|KEYWORD_STR {$$ = template("char*");}
 	|KEYWORD_BOOL {$$ = template("int");}
+	|IDENTIFIER {$$ = $1;}
 	;
 
 data_const:
@@ -258,22 +336,18 @@ data_const:
 %%
 int main ()
 {	
-   if ( yyparse() == 0 )
-		printf("Accepted!\n");
+   if ( yyparse() == 0 ){
+   	//printf("Accepted!\n");
+   }
 	else
 		printf("Rejected!\n");
 }
 
-//ERWTHSH PWS KANW KATI YPOXREOTIKO H PROERTIKO
 
-//ERWTHSH PWS KOITAW AN TO INTEGER EINAI THETIKO
-
-//ERWTHSH PWS KANW POIO AKRIBH TA DIAGNWSTIKA MINIMATA PX THELOUME NA LEEI MONO
-//SE POIA GRAMMH HPARXEI TO ERROR H KAI ALLA PRAGRMATA
- 
-//ERWTHSH TI KANW ME TO PLHN EINAI KAI TELESTHS PROSIMOU
-//KAI ARITHIMITIKOS TELESTHS
-
-//ERWTHSH PWS KANW ENSURE TIN SEIRA 
+//ERWTHSH PWS KOITAW AN TO INTEGER EINAI THETIK
 
 //ERWTHSH TA ARGS EINAI MONO data_type KAI EMPTY PINAKAS STO FUNCTION INPUT?
+
+//TODO TEST METHOD CASE1 WITH THE RETURN
+//TODO TEST FUNCTION
+//TODO KSANA RWTHSW GIA TO TI PAIZEI ME TO CIRCLE
