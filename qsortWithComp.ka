@@ -26,8 +26,10 @@ def swap(a[]:integer, i:integer, j:integer):
     a[j] = temp;
 enddef;
 
+-- GIATI EXEI VOID EDW ?
+
 -- Impelementation of the quick sort algorithm
-def quickSort(a[]:integer, low:integer, high:integer) -> void:
+def quickSort(a[]:integer, low:integer, high:integer):
     pivot, i, j : integer;
     if (low < high):
         pivot = low;

@@ -9,12 +9,14 @@ mycompiler:
 	./mycompiler < qsort.ka > qsort.c 
 	./mycompiler < qsort_comprehension.ka > qsort_comprehension.c 
 	./mycompiler < reverseWithComprehension.ka > reverseWithComprehension.c
+	./mycompiler < qsortWithComp.ka > qsortWithComp.c
 
 	gcc ./useless.c -o useless
 	gcc ./prime.c -o prime
 	gcc ./qsort.c -o qsort
 	gcc ./qsort_comprehension.c -o qsort_comprehension
 	gcc ./reverseWithComprehension.c -o reverseWithComprehension
+	gcc ./qsortWithComp.c -o qsortWithComp
 
 clean:
 	rm -f *.o mycompiler
@@ -22,13 +24,17 @@ clean:
 	rm -f myanalyzer.tab.c
 	rm -f myanalyzer.tab.h
 	rm -f myanalyzer.output
+
 	rm -f useless.c
 	rm -f prime.c
 	rm -f qsort.c
 	rm -f qsort_comprehension.c
 	rm -f reverseWithComprehension.c 
+	rm -f qsortWithComp.c
+
 	rm -f useless
 	rm -f prime
 	rm -f qsort
 	rm -f qsort_comprehension
 	rm -f reverseWithComprehension
+	rm -f qsortWithComp
