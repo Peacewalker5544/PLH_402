@@ -189,7 +189,7 @@ method_body:
 	;
 
 declare_const:
-	KEYWORD_CONST IDENTIFIER OP_ASSIGN data_const DELIM_COLON data_type {$$ = template("%s %s = %s", $6, $2, $4);}
+	KEYWORD_CONST expr DELIM_COLON data_type {$$ = template("%s %s", $4, $2);}
 	;
 
 /*LEIPEI TO COMP PWS TO BAZW EKEI MESA DHLADH PWS MPORW NA DW TA YPARXONTA COMPS*/
@@ -277,19 +277,20 @@ statements:
 /*ERWTHSH AN THELEI <= STO FOR*/
 instruction:
 	IDENTIFIER OP_ASSIGN expr DELIM_SEMICOLON {$$ = template("%s = %s;\n", $1, $3);}
+  |IDENTIFIER DELIM_LBRAC IDENTIFIER DELIM_RBRAC OP_ASSIGN expr DELIM_SEMICOLON {$$ = template("%s[%s] = %s;", $1, $3, $6);}
 	|KEYWORD_IF DELIM_LPAR expr DELIM_RPAR DELIM_COLON statements KEYWORD_ENDIF DELIM_SEMICOLON {$$ = template("if (%s){\n%s};", $3, $6);}
 	|KEYWORD_IF DELIM_LPAR expr DELIM_RPAR DELIM_COLON statements KEYWORD_ELSE DELIM_COLON statements KEYWORD_ENDIF DELIM_SEMICOLON 
 	{$$ = template("if (%s){\n%s}else{\n%s}", $3, $6, $9);}
 	|KEYWORD_FOR IDENTIFIER KEYWORD_IN DELIM_LBRAC expr DELIM_COLON expr DELIM_COLON expr DELIM_RBRAC
 	DELIM_COLON statements KEYWORD_ENDFOR  DELIM_SEMICOLON
-	{$$ = template("for (int %s = %s ; %s <= %s ; %s += %s){\n%s}", $2, $5, $2, $7, $2, $9, $12);}
+	{$$ = template("for (int %s = %s ; %s < %s ; %s += %s){\n%s}", $2, $5, $2, $7, $2, $9, $12);}
 	|KEYWORD_FOR IDENTIFIER KEYWORD_IN DELIM_LBRAC expr DELIM_COLON expr DELIM_RBRAC
 	DELIM_COLON statements KEYWORD_ENDFOR DELIM_SEMICOLON
-	{$$ = template("for (int %s = %s ; %s <= %s ; %s += 1){\n%s;}", $2, $5, $2, $7, $2, $10);}
+	{$$ = template("for (int %s = %s ; %s < %s ; %s += 1){\n%s;}", $2, $5, $2, $7, $2, $10);}
 	|IDENTIFIER OP_ASSIGN_ARR DELIM_LBRAC expr KEYWORD_FOR expr DELIM_COLON CONST_INTEGER DELIM_RBRAC DELIM_COLON data_type DELIM_SEMICOLON
 	{$$ = template("%s* %s = (%s*)malloc(%s * sizeof(%s)); \nfor (int %s = 0; %s < %s; ++%s){\n%s[%s] = %s;\n}", $11, $1, $11, $8, $11, $6, $6, $8, $6, $1, $6, $4);}
 	|IDENTIFIER OP_ASSIGN_ARR DELIM_LBRAC expr KEYWORD_FOR expr DELIM_COLON data_type KEYWORD_IN IDENTIFIER KEYWORD_OF CONST_INTEGER DELIM_RBRAC DELIM_COLON data_type DELIM_SEMICOLON
-	{$$ = template("%s* %s = (%s*)malloc(%s * sizeof(%s)); \nfor (int array_i = 0; array_i < %s; ++array_i){\n%s[array_i] = %s;\n}", $15, $1, $15, $12, $15, $12, $1, $4);}
+	{$$ = template("%s* %s = (%s*)malloc(%s * sizeof(%s)); \nfor (int array_i = 0; array_i < %s; ++array_i){\n%s[array_i] = %s[array_i];\n}", $15, $1, $15, $12, $15, $12, $1, $10);}
 	|KEYWORD_WHILE DELIM_LPAR expr DELIM_RPAR DELIM_COLON statements KEYWORD_ENDWHILE DELIM_SEMICOLON {$$ = template("while (%s){\n%s}", $3, $6);}
 	|KEYWORD_BREAK DELIM_SEMICOLON {$$ = template("break;");}
 	|KEYWORD_CONTINUE DELIM_SEMICOLON {$$ = template("continue;");}

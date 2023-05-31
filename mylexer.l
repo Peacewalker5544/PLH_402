@@ -156,8 +156,9 @@ OP_HASHTAG (\#)
 {IDENTIFIER} {yylval.str = strdup(yytext); return IDENTIFIER;}
 
 {LINE_COMMENT} {BEGIN(line_comment);}
-<line_comment>[^\n]*    /*Exculde everything except \n*/
-<line_comment>\n {BEGIN(INITIAL);}
+<line_comment>[^\n]*    /*Exculde everything except \n*/ 
+<line_comment>\n {BEGIN(INITIAL);
+ ++line_num;}
 
 [ \r\t] /*skip spaces*/
 
