@@ -29,7 +29,7 @@ enddef;
 -- GIATI EXEI VOID EDW ?
 
 -- Impelementation of the quick sort algorithm
-def quickSort(a[]:integer, low:integer, high:integer):
+def quickSort(a[]:integer, low:integer, high:integer)   :
     pivot, i, j : integer;
     if (low < high):
         pivot = low;
@@ -78,12 +78,9 @@ def main():
     for i in [0:aSize]:
         a[i] = rand.next() % 1000;
     endfor;
-    
     writeStr("Random array generated: ");
     printArray(a,aSize);
-
     quickSort(a,0,aSize-1);
-
     writeStr("Sorted array: ");
     printArray(a,aSize);
 enddef;

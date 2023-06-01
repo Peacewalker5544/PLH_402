@@ -1,12 +1,10 @@
-
 comp Circle:
-	#test[5]:integer;
-	#x:integer;
-	#x,#y,#z:str;
-	def move (dx: scalar, dy: scalar): enddef;
-	def move2 (dx: scalar, dy: scalar): enddef;
+	#x, #y: scalar;
+	#radius: scalar;
+	def area() -> scalar : return 3.14 * (#radius ** 2); enddef;
+	def perimeter() -> scalar : return 2 * 3.14 * #radius; enddef;
+	def move (dx: scalar, dy: scalar): #x = #x + dx ; #y = #y + dx; enddef;
 endcomp;
-
 const pi = 3.14152: scalar;
 const test2 = False: boolean;
 const test3 = True: boolean;
@@ -34,12 +32,12 @@ def test(promt: str, msg:str):
 	if (n1 == 1):
 		x = x + 1;
 	endif;
-	new_array := [x+5 for elm: 5] : Circle;
+	new_array := [x+5 for elm: 5] : integer;
 	for x in [1:5:1]: x = x + 3; endfor;
 	half := [x/2 for x:integer in a of 100] : scalar;
 enddef;
 
-def test2(promt: str, msg:str)->Circle:
+def test2(promt: str, msg:str)->int:
 	n1:integer;
 	x,y:scalar;
 	while ( x + 2 < 5 ):
@@ -57,15 +55,8 @@ def test2(promt: str, msg:str)->Circle:
 enddef;
 
 def main():
-	n1:integer;
-	x,y:scalar;
-	const pi = 3.14152: scalar;
-	n1:integer;
-	x,y:scalar;
-	directions[4]:str;
-	const test3 = True: boolean;
-	Circle:integer;
-	n1:Circle;
+	a = b + 1;
+	readInteger(rand.number);
 enddef;
 
 
