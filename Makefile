@@ -4,21 +4,21 @@ mycompiler:
 	bison -d -v -r all myanalyzer.y 
 	flex mylexer.l
 	gcc -o mycompiler lex.yy.c myanalyzer.tab.c cgen.c -lfl
-# 	./mycompiler < useless.ka > useless.c
-# 	./mycompiler < prime.ka > prime.c 
-# 	./mycompiler < qsort.ka > qsort.c 
-# 	./mycompiler < qsort_comprehension.ka > qsort_comprehension.c 
-# 	./mycompiler < reverseWithComprehension.ka > reverseWithComprehension.c
-#	./mycompiler < qsortWithComp.ka > qsortWithComp.c
-	./mycompiler < bookstore.ka > bookstore.c
-#	./mycompiler < example.ka
 
-# 	gcc ./useless.c -o useless
-# 	gcc ./prime.c -o prime
-# 	gcc ./qsort.c -o qsort
-# 	gcc ./qsort_comprehension.c -o qsort_comprehension
-# 	gcc ./reverseWithComprehension.c -o reverseWithComprehension
-#	gcc ./qsortWithComp.c -o qsortWithComp
+	./mycompiler < useless.ka > useless.c
+	./mycompiler < prime.ka > prime.c 
+	./mycompiler < qsort.ka > qsort.c 
+	./mycompiler < qsort_comprehension.ka > qsort_comprehension.c 
+	./mycompiler < reverseWithComprehension.ka > reverseWithComprehension.c
+	./mycompiler < qsortWithComp.ka > qsortWithComp.c
+	./mycompiler < bookstore.ka > bookstore.c
+
+	gcc ./useless.c -o useless
+	gcc ./prime.c -o prime
+	gcc ./qsort.c -o qsort
+	gcc ./qsort_comprehension.c -o qsort_comprehension
+	gcc ./reverseWithComprehension.c -o reverseWithComprehension
+	gcc ./qsortWithComp.c -o qsortWithComp
 	gcc ./bookstore.c -o bookstore
 
 clean:

@@ -93,6 +93,7 @@
 %type <str> method_arg
 %type <str> method_n_expr
 %type <str> expr_identifiers
+%type <str> expr_identifiers_dot
 
 %start input
 
@@ -228,7 +229,7 @@ declare_var:
 		if ( !strcmp($3,"int") || !strcmp($3,"char*") || !strcmp($3,"double") ){
 			$$ = template("%s %s", $3, $1);
 		}else{
-			$$ = template("%s %s = %s", comp_type, $1, $3);
+			$$ = template("%s %s = %s", $3, $1, comp_type);
 		};}
 	|IDENTIFIER DELIM_LBRAC DELIM_RBRAC DELIM_COLON data_type {$$ = template("%s* %s", $5, $1);}	
 	|IDENTIFIER DELIM_LBRAC CONST_INTEGER DELIM_RBRAC DELIM_COLON data_type {$$ = template("%s %s[%s]", $6, $1, $3);}
@@ -267,11 +268,16 @@ expr_identifiers:
 //	ident = $2;}
 	;
 
+expr_identifiers_dot:
+	OP_HASHTAG IDENTIFIER {$$ = template("%s", $2);}
+	|expr_identifiers_dot DELIM_DOT OP_HASHTAG IDENTIFIER {$$ = template("%s.%s", $1, $4);}
+	;
+
 expr:
 	data_const {$$ = template("%s", $1);}
 	|expr_identifiers {$$ = template("%s", $1);}
 	|func_call {$$ = template("%s",$1);}
-  |expr_identifiers DELIM_DOT	expr {$$ = template("%s.%s", $1, $3);}
+  |expr_identifiers DELIM_DOT	expr_identifiers_dot {$$ = template("%s.%s", $1, $3);}
 	|expr_identifiers DELIM_DOT IDENTIFIER DELIM_LPAR method_n_expr DELIM_RPAR  {$$ = template("%s.%s(&%s%s)", $1, $3, $1, $5);}
 //	|expr DELIM_DOT expr {$$ = template("%s.%s", $1, $3);}
 //	|expr DELIM_LBRAC expr DELIM_RBRAC {$$ = template("%s[%s]", $1, $3);}
@@ -311,8 +317,8 @@ expr:
 
 method_n_expr:
 	%empty {$$ = template("");}
-	|expr {$$ = template(",%s", $1);}
-	|n_expr DELIM_COMMA expr {$$ = template("%s, %s", $1, $3);}
+	|expr {$$ = template(", %s", $1);}
+	|n_expr DELIM_COMMA expr {$$ = template(", %s, %s", $1, $3);}
 	;
 
 func_call:
@@ -383,7 +389,7 @@ data_type:
 	|KEYWORD_BOOL {$$ = template("int");}
 	|IDENTIFIER {$$ = template("%s", $1);
 //	|IDENTIFIER {$$ = template("ctor_%s", $1);
-	comp_type = template("%s", $1);}
+	comp_type = template("ctor_%s", $1);}
 	;
 
 data_const:
