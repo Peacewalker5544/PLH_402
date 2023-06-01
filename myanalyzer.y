@@ -156,7 +156,9 @@ program_main:
 declare_comp:
 	KEYWORD_COMP IDENTIFIER DELIM_COLON comp_members_var { comp_type = $2; } comp_members_method KEYWORD_ENDCOMP 
 	{	
-		$$ = template("typedef struct %s {\n%s%s}%s;\n\n%s\n%s ctor_%s = {%s};\n", $2, $4,comp_func,$2, $6, $2, $2, func_names);}
+		$$ = template("#define SELF struct %s *self\ntypedef struct %s {\n%s%s}%s;\n\n%s\n%s ctor_%s = {%s};\n#undef SELF\n",$2, $2, $4,comp_func,$2, $6, $2, $2, func_names);
+		comp_func = template("");
+		func_names = template("");}
 	;
 
 /*ERWTHSH ginetai na exw types xwris member variables*/
@@ -175,22 +177,22 @@ comp_members_method:
 	/*ERWTHSH PWS TO FTIAXNW NA EXEI PROSBASH MONO STA MEMBER VARIABLES*/
 member_method:
 	KEYWORD_DEF IDENTIFIER DELIM_LPAR method_arg DELIM_RPAR OP_MINUS OP_BIGGER data_type DELIM_COLON func_body KEYWORD_RETURN expression KEYWORD_ENDDEF DELIM_SEMICOLON
-	{$$ = template("%s %s(struct %s *self %s){%s\nreturn %s\n}", $8, $2, comp_type, $4, $10, $12);
+	{$$ = template("%s %s(SELF%s){%s\nreturn %s\n}", $8, $2, $4, $10, $12);
 	if (comp_func != null) {
-		comp_func = template("%s (*%s) (struct %s *self %s);\n%s", $8, $2, comp_type, $4, comp_func);
+		comp_func = template("%s (*%s) (SELF%s);\n%s", $8, $2, $4, comp_func);
 		func_names = template(".%s = %s,%s", $2, $2, func_names);
 	}else{
-		comp_func = template("%s (*%s) (struct %s *self %s);\n", $8, $2, comp_type, $4);
+		comp_func = template("%s (*%s) (SELF%s);\n", $8, $2, $4);
 		func_names = template(".%s = %s", $2, $2);
 	}	
 	}
 	|KEYWORD_DEF IDENTIFIER DELIM_LPAR method_arg DELIM_RPAR DELIM_COLON func_body KEYWORD_ENDDEF DELIM_SEMICOLON
-	{$$ = template("void %s(struct %s *self %s){%s\n}", $2, comp_type, $4, $7);
+	{$$ = template("void %s(SELF%s){%s\n}", $2, $4, $7);
 	if (comp_func != null) {
-		comp_func = template("void (*%s) (struct %s *self %s);\n%s", $2, comp_type, $4, comp_func);
+		comp_func = template("void (*%s) (SELF%s);\n%s", $2, $4, comp_func);
 		func_names = template(".%s = %s,%s", $2, $2, func_names);
 	}else{
-		comp_func = template("void (*%s) (struct %s *self %s);\n", $2, comp_type, $4);
+		comp_func = template("void (*%s) (SELF%s);\n", $2, $4);
 		func_names = template(".%s = %s", $2, $2);
 	}
 	}
@@ -210,10 +212,10 @@ member_var_identifiers:
 
 method_arg:
 	%empty {$$ = template("");}
-	|IDENTIFIER DELIM_COLON data_type {$$ = template(",%s %s", $3, $1);}	
-	|IDENTIFIER DELIM_LBRAC DELIM_RBRAC DELIM_COLON data_type {$$ = template(",%s* %s", $5, $1);}	
-	|func_arg DELIM_COMMA IDENTIFIER DELIM_COLON data_type {$$ = template(",%s, %s %s", $1, $5, $3);}
-	|func_arg DELIM_COMMA IDENTIFIER DELIM_LBRAC DELIM_RBRAC DELIM_COLON data_type {$$ = template(",%s, %s* %s", $1, $7, $3);}	
+	|IDENTIFIER DELIM_COLON data_type {$$ = template(" ,%s %s", $3, $1);}	
+	|IDENTIFIER DELIM_LBRAC DELIM_RBRAC DELIM_COLON data_type {$$ = template(" ,%s* %s", $5, $1);}	
+	|func_arg DELIM_COMMA IDENTIFIER DELIM_COLON data_type {$$ = template(" ,%s, %s %s", $1, $5, $3);}
+	|func_arg DELIM_COMMA IDENTIFIER DELIM_LBRAC DELIM_RBRAC DELIM_COLON data_type {$$ = template(" ,%s, %s* %s", $1, $7, $3);}	
 	;
 
 declare_const:
@@ -260,10 +262,13 @@ expression:
 expr_identifiers:
 	IDENTIFIER {$$ = $1;}
 	|OP_HASHTAG IDENTIFIER {$$ = template("self->%s", $2);}
-	|OP_HASHTAG IDENTIFIER DELIM_LBRAC expr DELIM_RBRAC {$$ = template("%s[%s]", $2, $4);}
+	|OP_HASHTAG IDENTIFIER DELIM_LBRAC expr DELIM_RBRAC {$$ = template("self->%s[%s]", $2, $4);}
 	|IDENTIFIER DELIM_LBRAC expr DELIM_RBRAC {$$ = template("%s[%s]", $1, $3);}
 //	ident = $2;}
 	;
+
+expr_identifier_hashtag:
+	
 
 expr:
 	data_const {$$ = template("%s", $1);}
