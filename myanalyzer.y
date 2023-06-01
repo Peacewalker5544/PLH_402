@@ -267,9 +267,6 @@ expr_identifiers:
 //	ident = $2;}
 	;
 
-expr_identifier_hashtag:
-	
-
 expr:
 	data_const {$$ = template("%s", $1);}
 	|expr_identifiers {$$ = template("%s", $1);}
