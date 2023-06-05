@@ -1,0 +1,85 @@
+--Multiplying two numbers using Karatsuba Algorithm
+
+def digitNum(x: integer) -> integer:
+	count: integer;
+	count = 0;
+	while(x > 0):
+		count += 1;
+		x = x/10;
+	endwhile;
+	return count;
+enddef;
+
+def splitUpper(x: integer, m: integer) -> integer:
+	x = x / (10 ** m) ;
+	return x;
+enddef;
+
+def splitLower(x: integer, m: integer) -> integer:
+	y: integer;
+	y = x / (10 ** m);
+	y = y * (10 ** m);
+	return x - y;
+enddef;
+
+def karatsuba(num1: integer, num2:integer) -> integer:
+	if ( num1 < 10 or num2 < 10):
+		return num1 * num2;
+	endif;
+
+	size_num1: integer;
+	size_num2: integer;
+
+	m: integer;
+	m2: integer;
+
+	upper1: integer;
+	upper2: integer;
+	lower1: integer;
+	lower2: integer;
+
+	z0: integer;
+	z1: integer;
+	z2: integer;
+
+	size_num1 = digitNum(num1);
+	size_num2 = digitNum(num2);
+
+	if(size_num1 >= size_num2):
+		m = size_num1;
+	else:
+		m = size_num2;
+	endif;
+
+	m2 = m/2;
+	
+	upper1 = splitUpper(num1, m2);
+	upper2 = splitUpper(num2, m2);
+	lower1 = splitLower(num1, m2);
+	lower2 = splitLower(num2, m2);
+
+	z0 = karatsuba(lower1, lower2);
+	z1 = karatsuba(lower1 + upper1, lower2 + upper2);
+	z2 = karatsuba(upper1, upper2);	
+
+	return (z2 * (10 ** (m2 * 2)))+ ((z1 - z2 - z0) * (10 ** m2)) + z0;
+enddef;
+
+def main():
+	num1: integer;
+	num2: integer;
+
+    writeStr("Give num1: \n");
+    num1 = readInteger();
+
+    writeStr("Give num2: \n");
+    num2 = readInteger();
+
+	result: integer;
+	result = karatsuba(num1, num2);
+	if(result < 0):
+		write("The result was way too big to be displayed using an integer :(\nPlease enter smaller numbers.\n");
+	else:
+		write("Multiplication result using Karatsuba algorithm:\n%d\n", result);
+	endif;
+enddef;

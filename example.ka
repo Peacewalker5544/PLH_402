@@ -1,4 +1,3 @@
-
 def test(promt: str, msg:str):
 
 enddef;
