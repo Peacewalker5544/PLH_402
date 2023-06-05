@@ -2,7 +2,7 @@
  #include <stdio.h>
  #include "cgen.h"
  #include <string.h>
-	
+
  extern int yylex(void);
  extern char* yytext;
 
@@ -138,16 +138,17 @@ declare_comp:
 		comp_func = template("");
 		func_names = template("");}
 	;
+	|KEYWORD_COMP IDENTIFIER DELIM_COLON comp_members_var KEYWORD_ENDCOMP 
+	{$$ = template("#define SELF struct %s *self\ntypedef struct %s {\n%s}%s;\n#undef SELF\n",$2, $2, $4,$2);}
+	;
 
 comp_members_var:	
-	%empty {$$ = template("");}
-	|member_var {$$ = template("%s;\n", $1);}
+	member_var {$$ = template("%s;\n", $1);}
 	|comp_members_var member_var {$$ = template("%s%s;\n", $1, $2);}	
 	;
 
 comp_members_method:
-	%empty {$$ = template("");}
-	|member_method {$$ = template("%s;\n", $1);}
+	member_method {$$ = template("%s;\n", $1);}
 	|comp_members_method member_method {$$ = template("%s\n%s;\n", $1, $2);}
 	;
 

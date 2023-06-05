@@ -1,186 +1,77 @@
-comp Address:
-  #street: str;
-  #number: integer;
-  #city: str;
+--Making a comp and testing it.
+comp Circle:
 
-  def setAddress(s: str, n: integer, c: str):
-    #street = s;
-    #number = n;
-    #city = c;
-  enddef;
+	#x, #y: scalar;
+	#radius: scalar;
 
-  def printAddress():
-    write("Address: %s %d, %s\n", #street, #number, #city);    
-  enddef;
-endcomp;
+	def area() -> scalar: 
+		return 3.14 * (#radius ** 2);
+	enddef;
 
-comp Person:
-  #firstName: str;
-  #lastName: str;
-  #email: str;
-  #phone: integer;
-  #address: Address;
+	def perimeter() -> scalar: 
+		return 2 * 3.14 * #radius; 
+	enddef;
 
-  def setPerson(fn: str, ln: str, email: str, phone: integer, addr: Address):
-    #firstName = fn;
-    #lastName = ln;
-    #email = email;
-    #phone = phone;
-    #address = addr;
-  enddef;
+	def move(dx: scalar, dy:scalar): 
+		#x = #x + dx; 
+		#y = #y + dy; 
+	enddef;
 
-  def printPersonInfo():
-    write("%s %s, email: %s phone: %d\n", #firstName, #lastName, #email, #phone);
-    #address.printAddress();
-  enddef;
+	def setCircle(x: scalar, y: scalar, r: scalar):
+		#x = x;
+		#y = y;
+		#radius = r;
+	enddef;
 
-endcomp;
+endcomp; 
 
-comp Book:
-  #title, #isbn: str;
-  #author: Person;  
-  #numOfCopies: integer;
-  #price: scalar;
+--A dummy comp ignore.
+comp Circle2:
+	#x, #y: scalar;
+	#radius: scalar;
+endcomp; 
 
-  def setBook(t: str, a: Person, numOfCopies: integer, price: scalar):
-    #title = t;
-    #author = a;
-    #numOfCopies = numOfCopies;
-    #price = price;
-  enddef;
-
-  def printBook():
-    write("Title: %s\n", #title);
-    writeStr("Author:");
-    #author.printPersonInfo();
-    write("Price:%f\n", #price);
-    write("Number of available copies: %d\n", #numOfCopies);    
-  enddef;
-endcomp;
-
-comp Order:
-  #orderNum: integer;
-  #book: Book;
-  #quantity: integer;
-  #shippingAddress: Address;
-  #delivered: boolean;
-
-  def setOrder(orNum: integer, b: Book, q: integer, sh: Address, del: boolean):
-    #orderNum = orNum;
-    #book = b;
-    #quantity = q;
-    #shippingAddress = sh;
-    #delivered = del;
-  enddef;
-
-  def printOrder():
-
-  enddef;
-
-endcomp;
-
-comp Bookstore:
-  #name: str;
-  #listOfBooks[100]: Book;
-  #numOfBooks: integer;
-  #listOfOrders[100]: Order;
-  #numOfOrders: integer;
-
-  def putOrder(o: Order):    
-    #listOfOrders[#numOfOrders] = o;
-    #numOfOrders += 1;
-  enddef;
- 
-  def addBook(b: Book):    
-    #listOfBooks[#numOfBooks] = b;
-    #numOfBooks += 1;
-  enddef;
-
-  def printBookStoreBooks():
-    for i in [0 : #numOfBooks]:
-      #listOfBooks[i].printBook();
-    endfor;
-  enddef;
-
-  def calculateTotalOrdersIncome()-> scalar:     
-    total: scalar;
-    total = 0;
-
-    for i in [0 : #numOfOrders]:
-      if (#listOfOrders[i].#delivered):
-        total = total + #listOfOrders[i].#quantity * #listOfOrders[i].#book.#price;      
-      endif;
-    endfor;
-
-    return total;
-  enddef; 
-endcomp;
-
-orderId: integer;
-
--- factory functions
-def createAddress(s: str, n: integer, c: str)-> Address:
-  a: Address;
-  a.setAddress(s, n, c);    
-  return a;
-enddef;
-
-def createPerson(fn: str, ln: str, email: str, phone: integer, addr: Address)-> Person:
-  p: Person;
-  p.setPerson(fn, ln, email, phone, addr);    
-  return p;
-enddef;
-
-def createBook(t: str, a: Person, numOfCopies: integer, price: scalar)-> Book:
-  b: Book;
-  b.setBook(t, a, numOfCopies, price);
-  return b;
-enddef;
-
-def createOrder(orNum: integer, b: Book, q: integer, sh: Address, del: boolean)-> Order:
-  ord: Order;
-  ord.setOrder(orNum, b, q, sh, del);
-  return ord;
-enddef;
-
-def createBookstore(n: str)->Bookstore:
-  bs: Bookstore;
-  bs.#name = n;
-  bs.#numOfBooks = 0;
-  bs.#numOfOrders = 0;
-  
-  return bs;
+def createCircle(x: scalar, y: scalar, r: scalar) -> Circle :
+  c: Circle;
+  c.setCircle(x,y,r);
+  return c;
 enddef;
 
 def main():
-  orderId = 0;
 
-  a, a1: Address;
-  a = createAddress("Stadiou", 10, "Stadiou");  
+	aCircle: Circle;
+	x,y: scalar;
 
-  author: Person;
-  author = createPerson("Christos","Papadimitriou","cpap@gmail.com", 12345, a);   
+	x = 0;
+	y = 0;
 
-  b: Book;
-  b = createBook("Computation Theory", author, 34.3, 100);
-  
-  bs: Bookstore;
-  bs = createBookstore("Papasotiriou");
-  
-  bs.addBook(b);
+	aCircle = createCircle(x,y,1);
 
-  a = createAddress("Wall Street", 10, "NY");
-  author = createPerson("Dennis", "Richie", "richie@gmail.com", 54321, a);
-  b = createBook("C Programming", author, 10.3, 100);  
-  bs.addBook(b);  
+	write("Circle location: (%f,%f)\n", aCircle.#x, aCircle.#y);
+	write("Circle area: %f\n", aCircle.area());
+	write("Circle perimeter: %f\n", aCircle.perimeter());
 
-  bs.printBookStoreBooks();
+	--Moving the circle
 
-  ord : Order;
-  ord = createOrder(orderId, b, 2, a, False );  
-  orderId +=  1;
-  
-  bs.putOrder(ord);
-  write("Bookstore orders income: %.2f\n", bs.calculateTotalOrdersIncome());
+	x = 1;
+	y = 4;
+
+	write("\n");
+
+	aCircle.move(x, y);
+
+	write("Moved Circle location: (%f,%f)\n", aCircle.#x, aCircle.#y);
+	write("Moved Circle area: %f\n", aCircle.area());
+	write("Moved Circle perimeter: %f\n", aCircle.perimeter());
+
+	--Resing the circle
+
+	write("\n");
+
+	aCircle.#radius = 2;
+
+	write("Resized Circle location: (%f,%f)\n", aCircle.#x, aCircle.#y);
+	write("Resized Circle area: %f\n", aCircle.area());
+	write("Resized Circle perimeter: %f\n", aCircle.perimeter());
 
 enddef;
